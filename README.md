@@ -1,5 +1,5 @@
 # DAI
-DAI Practicas de la asignatura Desarrollo de aplicaciones para internet en la Universidad de Granada (UGR)
+Practicas de la asignatura Desarrollo de aplicaciones para internet en la Universidad de Granada (UGR)
 
 
 Practica 1 de una aplicación sobre el framework Django con Bootstrap, manejo de sesiones y base de datos SQL.
