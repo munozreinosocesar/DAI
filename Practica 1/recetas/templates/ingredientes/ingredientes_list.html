@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Ingredientes</h1>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="text-center alert alert-{{ message.tags }}">
+                {{ message|safe }}
+            </div>
+        {% endfor %}
+
+    {% endif %}
+    <table class="table mt-2 ">
+      <tbody>
+            {% if user.is_authenticated and user.is_staff %}
+                <a href="{% url 'ingredientes_new' %}" class="btn btn-success" role="button">Nuevo Ingrediente</a>
+            {% endif %}
+            <th scope="col">Nombre</th>
+            <th scope="col">Cantidad</th>
+            <th scope="col">Unidades</th>
+            <th scope="col">Recetas</th>
+
+            {% for ingrediente in object_list %}
+                <tr>
+                        <td>{{ ingrediente.nombre }}</td>
+                        <td>{{ ingrediente.cantidad }}</td>
+                        <td>{{ ingrediente.unidades }}</td>
+                        <td>{{ ingrediente.receta }}</td>
+
+                        <td>
+						    {% if user.is_authenticated and user.is_staff %}
+                                <a href="{% url 'ingredientes_update' pk=ingrediente.pk %}" class="btn btn-primary" role="button">Editar</a>
+                                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModel">Borrar</button>
+
+                            <!-- Delete Modal -->
+                                <div class="modal fade" id="deleteModel" tabindex="-1" aria-labelledby="deleteModelLabel" aria-hidden="true">
+                                  <div class="modal-dialog">
+                                    <div class="modal-content">
+                                      <div class="modal-header">
+                                        <h1 class="modal-title fs-5" id="deleteModel">Borrar</h1>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                                      </div>
+                                      <div class="modal-body">
+                                        ¿Estás seguro de que quieres eliminar el ingrediente?
+                                      </div>
+                                      <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                                        <form action="{% url 'ingredientes_delete' pk=ingrediente.id %}" method="POST">
+                                          {% csrf_token %}
+                                          <input type="hidden" name="id" id="receta_id"/>
+                                          <button type="submit" class="btn btn-danger">Aceptar</button>
+                                        </form>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                            {% endif %}
+				        </td>
+                </tr>
+            {% endfor %}
+      </tbody>
+    </table>
+{% endblock %}
+
+
+

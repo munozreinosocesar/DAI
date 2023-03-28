@@ -1,0 +1,13 @@
+<!-- account/registration/signup_users.html -->
+{% extends 'base.html' %}
+
+{% block title %}Gestionar usuarios{% endblock %}
+
+{% block content %}
+<h2>Registrar Usuario</h2>
+<form method="post">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit">Registrarse</button>
+</form>
+{% endblock %}

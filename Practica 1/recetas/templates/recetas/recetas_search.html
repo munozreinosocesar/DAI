@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Recetas</h1>
+
+    <table class="table mt-2 ">
+      <tbody>
+            <th scope="col">Nombre</th>
+
+            {% for receta in object_list %}
+                <tr>
+                    <td> <a class="nav-link"  href="{% url 'recetas_detail' pk=receta.id %}" name="detail" method="get">{{ receta.nombre }}</a></td>
+                </tr>
+            {% endfor %}
+      </tbody>
+    </table>
+{% endblock %}
