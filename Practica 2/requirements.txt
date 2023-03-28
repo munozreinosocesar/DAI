@@ -1,0 +1,4 @@
+# requirements.txt
+Flask
+pymongo
+Flask-RESTful

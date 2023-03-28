@@ -1,0 +1,577 @@
+<!-- templates/base.html -->
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Práctica 4</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.1/dist/jquery.slim.min.js"></script>
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha384-nvAa0+6Qg9clwYCGGPpDQLVpLNn0fRaROjHqs13t4Ggj3Ez50XnGQqc/r8MhnRDZ" crossorigin="anonymous"></script>
+    
+    <style>
+      [data-theme="light"] {
+        background-color: #ffffff;
+      }
+          
+      [data-theme="dark"] {
+        background-color: #4d4b4b;
+      }
+    </style>
+
+    <script>
+      const recetas = []              // declaraciones
+      let html_str  = ''              // de variables
+      let i         = 0               //
+      // fetch devuelve una promise
+      fetch('/api/recipes')           // GET por defecto,
+      .then(res => res.json())        // respuesta en json, otra promise
+      .then(filas => {                // arrow function
+          filas.forEach(fila => {     // bucle ES6, arrow function
+              i++
+              recetas.push(fila)      // se guardan para después sacar cada una
+              // ES6 templates
+              html_str += `<tr>
+                             <td>${i}</td>
+                             <td>
+                                <button onclick="detalle('${i-1}')"
+                                      type="button" class="btn btn-outline btn-sm aumenta"
+                                      data-bs-toggle="modal" data-bs-target="#detailModal">
+                                ${fila.name}
+                                </button>
+                            </td>
+                            <td>
+                              <button onclick="editar('${fila._id}')"
+                                  type="button" class="btn btn-warning btn-sm aumenta"
+                                  data-bs-toggle="modal" data-bs-target="#updateModal">Edit</button>
+                              <button onclick="eliminar('${fila._id}')"
+                                  type="button" class="btn btn-danger btn-sm aumenta" 
+                                  data-bs-toggle="modal" data-bs-target="#deleteModal">Delete</button>
+                            </td>
+                            </tr>`         // ES6 templates
+          });
+          document.getElementById('tbody').innerHTML=html_str  // se pone el html en su sitio
+          
+          var curFontSize= localStorage["FontSize"];
+          $('.aumenta').css('font-size', parseInt(curFontSize) + "px");
+      })
+
+  function detalle(i) {  // saca un modal con la información de cada coctel
+    const recetas = []              // declaraciones
+    let html_str  = '<h5>Ingredientes</h5> <ul>'              // de variables
+    let j         = 0               //
+    let k         = 0               //
+    // fetch devuelve una promise
+    fetch('/api/recipes')           // GET por defecto,
+    .then(res => res.json())        // respuesta en json, otra promise
+    .then(filas => {                // arrow function
+        filas.forEach(fila => {     // bucle ES6, arrow function
+          j++
+          if (i == j - 1){
+            $('#recetaNombre').html(`${fila.name}`);
+            for (k = 0; k < fila.ingredients.length; k++) {
+                html_str += `<li>${fila.ingredients[k].name}</li>`
+            }
+            html_str += `</ul>`
+            for (k = 0; k < fila.instructions.length; k++) {
+                html_str += `- ${fila.instructions[k]} <br>`
+            }
+          }
+        });
+        $('#recetaBody').html(html_str);
+
+    })
+  }
+
+  function editar(id) {
+    var url = '/api/recipes/' + id;
+    var name = document.getElementById("name");
+    var component = document.getElementById("component");
+    var instructions = document.getElementById("instruction");
+    var componentString = String(component.value);
+    let i = 0;
+    var componentJSON = String(component.value).split(/\r?\n/);
+
+    if(componentJSON.length == 1){
+      (async () => {
+      const rawResponse = await fetch(url, {
+        method: 'PUT',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({name: name.value, instructions: [instructions.value], ingredients: [
+          {name: componentJSON[0]},
+          ]})
+      });
+      const content = await rawResponse.json();
+
+      console.log(content);
+      })();
+    }else if(componentJSON.length == 2){
+      (async () => {
+      const rawResponse = await fetch(url, {
+        method: 'PUT',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({name: name.value, instructions: [instructions.value], ingredients: [
+          {name: componentJSON[0]},
+          {name: componentJSON[1]},
+          ]})
+      });
+      const content = await rawResponse.json();
+
+      console.log(content);
+      })(); 
+    }else if(componentJSON.length == 3){
+      (async () => {
+      const rawResponse = await fetch(url, {
+        method: 'PUT',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({name: name.value, instructions: [instructions.value], ingredients: [
+          {name: componentJSON[0]},
+          {name: componentJSON[1]},
+          {name: componentJSON[2]},
+          ]})
+      });
+      const content = await rawResponse.json();
+
+      console.log(content);
+      })(); 
+    }else if(componentJSON.length == 4){
+      (async () => {
+      const rawResponse = await fetch(url, {
+        method: 'PUT',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({name: name.value, instructions: [instructions.value], ingredients: [
+          {name: componentJSON[0]},
+          {name: componentJSON[1]},
+          {name: componentJSON[2]},
+          {name: componentJSON[3]},
+          ]})
+      });
+      const content = await rawResponse.json();
+
+      console.log(content);
+      })(); 
+    }else{
+      (async () => {
+      const rawResponse = await fetch(url, {
+        method: 'PUT',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({name: name.value, instructions: [instructions.value], ingredients: ""})
+      });
+      const content = await rawResponse.json();
+
+      console.log(content);
+      })(); 
+    }
+
+  }
+  function eliminar(id) { 
+    var url = '/api/recipes/' + id;
+    (async () => {
+      const rawResponse = await fetch(url, {
+        method: 'DELETE',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        }
+      });
+      const content = await rawResponse.json();
+
+      console.log(content);
+      })(); 
+  }
+  
+  function crear() {
+    var name = document.getElementById("name");
+    var component = document.getElementById("component");
+    var instructions = document.getElementById("instruction");
+    var componentString = String(component.value);
+    let i = 0;
+    var componentJSON = String(component.value).split(/\r?\n/);
+
+    if(componentJSON.length == 1){
+      (async () => {
+      const rawResponse = await fetch('/api/recipes', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({name: name.value, instructions: [instructions.value], ingredients: [
+          {name: componentJSON[0]},
+          ]})
+      });
+      const content = await rawResponse.json();
+
+      console.log(content);
+      })(); 
+    }else if(componentJSON.length == 2){
+      (async () => {
+      const rawResponse = await fetch('/api/recipes', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({name: name.value, instructions: [instructions.value], ingredients: [
+          {name: componentJSON[0]},
+          {name: componentJSON[1]},
+          ]})
+      });
+      const content = await rawResponse.json();
+
+      console.log(content);
+      })(); 
+    }else if(componentJSON.length == 3){
+      (async () => {
+      const rawResponse = await fetch('/api/recipes', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({name: name.value, instructions: [instructions.value], ingredients: [
+          {name: componentJSON[0]},
+          {name: componentJSON[1]},
+          {name: componentJSON[2]},
+          ]})
+      });
+      const content = await rawResponse.json();
+
+      console.log(content);
+      })(); 
+    }else if(componentJSON.length == 4){
+      (async () => {
+      const rawResponse = await fetch('/api/recipes', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({name: name.value, instructions: [instructions.value], ingredients: [
+          {name: componentJSON[0]},
+          {name: componentJSON[1]},
+          {name: componentJSON[2]},
+          {name: componentJSON[3]},
+          ]})
+      });
+      const content = await rawResponse.json();
+
+      console.log(content);
+      })(); 
+    }else{
+      (async () => {
+      const rawResponse = await fetch('/api/recipes', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({name: name.value, instructions: [instructions.value], ingredients: ""})
+      });
+      const content = await rawResponse.json();
+
+      console.log(content);
+      })(); 
+    }
+
+  }
+
+
+
+  </script>
+  <!-- Detail Modal -->
+  <div class="modal fade" id="detailModal" tabindex="-1" aria-labelledby="detailModal" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="recetaNombre"></h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body" id="recetaBody">
+        </div>    
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Modal -->
+  <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModal" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="deleteModel">Borrar</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          ¿Estás seguro de que quieres eliminar la receta?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+          <form action="#" onclick="return eliminar()">
+            <button data-bs-dismiss="modal" type="submit" class="btn btn-danger">Aceptar</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Update Modal -->
+  <div class="modal fade" id="updateModal" tabindex="-1" aria-labelledby="updateModal" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="updateModal">Edit Recipe</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <div id="name-group" class="form-group">
+            <label for="name">Name</label>
+            <input
+              type="text"
+              class="form-control"
+              id="name"
+              name="name"
+              placeholder="A name for this recipe"
+            />
+          </div>
+          <div id="component-group" class="form-group">
+            <label for="component">Components</label>
+            <textarea class="form-control"                 
+            type="textarea"
+            class="form-control"
+            id="component"
+            name="component" 
+            placeholder="The components recipe, in lines"
+            style="min-width: 100%"></textarea>
+          </div>
+          <div id="instruction-group" class="form-group">
+            <label for="instruction">Instructions</label>
+            <textarea class="form-control"                 
+            type="textarea"
+            class="form-control"
+            id="instruction"
+            name="instruction"
+            placeholder="The instructions, in lines"
+            style="min-width: 100%"></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <form action="#" onclick="return crear()">
+            <button data-bs-dismiss="modal" type="submit" class="btn btn-primary">Save Changes</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+    <!-- Create Modal -->
+    <div class="modal fade" id="createModal" tabindex="-1" aria-labelledby="createModal" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="createModal">Add Recipe</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+          </div>
+          <div class="modal-body">
+            <div id="name-group" class="form-group">
+              <label for="name">Name</label>
+              <input
+                type="text"
+                class="form-control"
+                id="name"
+                name="name"
+                placeholder="A name for this recipe"
+              />
+            </div>
+            <div id="component-group" class="form-group">
+              <label for="component">Components</label>
+              <textarea class="form-control"                 
+              type="textarea"
+              class="form-control"
+              id="component"
+              name="component" 
+              placeholder="The components recipe, in lines"
+              style="min-width: 100%"></textarea>
+            </div>
+            <div id="instruction-group" class="form-group">
+              <label for="instruction">Instructions</label>
+              <textarea class="form-control"                 
+              type="textarea"
+              class="form-control"
+              id="instruction"
+              name="instruction"
+              placeholder="The instructions, in lines"
+              style="min-width: 100%"></textarea>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <form action="#" onclick="return crear()">
+              <button data-bs-dismiss="modal" type="submit" class="btn btn-primary">Save Changes</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <nav class="navbar navbar-expand-lg">
+      <div class="container-md">
+        <a class="navbar-brand" href="/">Práctica 4</a>
+        <button id="darkmode" type="button" class="btn" onclick="toggleDark()">
+          <span id="light" class="badge bg-dark">Dark Mode </span>
+          <span id="night" class="badge bg-light text-dark">Light Mode</span>
+        </button>
+        <button class="increaseFont btn" value="increase">
+          <span class="badge bg-dark">+</span>
+        </button>
+        <button class="decreaseFont btn" value="decrease">
+          <span class="badge bg-dark">-</span>
+        </button>
+        <form class="d-flex" role="search" name="buscador" id="buscador" action="#" onsubmit="return buscar()">
+          <input class="form-control me-2" name="receta" type="search" placeholder="Buscar" id="receta" aria-label="Search">
+          <button onsubmit="return buscar()" class="btn btn-outline-success" type="submit">Buscar</button>
+        </form>
+      </div>
+    </nav>
+  </head>
+  <body>
+
+    <main>
+
+      <div class="container">
+      <button type="button" class="btn btn-primary aumenta" data-bs-toggle="modal" data-bs-target="#createModal" data-bs-dismiss="modal">Add Recipe</button>
+
+        <table class="table table-sm">
+          <thead>
+            <tr>
+              <th>N</th>
+              <th>Name</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="tbody">
+
+          </tbody>
+        </table>
+      </div>
+    </main>
+  </body>
+</html>
+
+<script>
+ 
+ function buscar() {  // saca un modal con la información de cada coctel
+    var receta_buscada = document.getElementById("receta").value
+    const recetas = []              // declaraciones
+    let html_str  = ''              // de variables
+    let i         = 0               //
+    // fetch devuelve una promise
+    fetch('/api/recipes')           // GET por defecto,
+    .then(res => res.json())        // respuesta en json, otra promise
+    .then(filas => {                // arrow function
+        filas.forEach(fila => {     // bucle ES6, arrow function
+            i++
+            recetas.push(fila)      // se guardan para después sacar cada una
+            // ES6 templates
+            if (fila.name == receta_buscada){          
+              html_str = `<tr>
+                            <td>${i}</td>
+                            <td>
+                                <button onclick="detalle('${i-1}')"
+                                      type="button" class="btn btn-outline btn-sm aumenta"
+                                      data-bs-toggle="modal" data-bs-target="#detailModal">
+                                ${fila.name}
+                                </button>
+                            </td>
+                            <td>
+                              <button type="button" class="btn btn-warning btn-sm aumenta">Edit</button>
+                              <button onclick="eliminar('${fila.id}')"
+                                  type="button" class="btn btn-danger btn-sm aumenta" 
+                                  data-bs-toggle="modal" data-bs-target="#deleteModal">Delete</button>
+                            </td>
+                            </tr>`         // ES6 templates
+              }
+          });
+          
+        document.getElementById('tbody').innerHTML=html_str  // se pone el html en su sitio
+        var curFontSize= localStorage["FontSize"];
+        $('.aumenta').css('font-size', parseInt(curFontSize) + "px");
+    })
+ }
+
+</script>
+
+
+<script>
+const container = document.body;
+if(localStorage.getItem("data-theme")){
+  container.setAttribute("data-theme",localStorage.getItem("data-theme")); 
+  toggleDark(1)
+}
+
+function toggleDark(r) {
+  const dataTheme = container.getAttribute("data-theme");
+  let theme_switch;
+  if(dataTheme === "light") {theme_switch = 1} else {theme_switch = 0}
+  if(r){theme_switch = !theme_switch}
+  if (theme_switch) {
+    container.setAttribute("data-theme", "dark");
+    document.getElementById("night").style.display = "block";
+    document.getElementById("light").style.display = "none";
+    localStorage.setItem("data-theme", "dark");
+  } else {
+    container.setAttribute("data-theme", "light");
+    document.getElementById("night").style.display = "none";
+    document.getElementById("light").style.display = "block";
+    localStorage.setItem("data-theme", "light");
+    }
+}
+</script>
+
+<script>
+  $(document).ready(function () {
+      var curFontSize= localStorage["FontSize"];
+      var curFontSize1= localStorage["FontSize1"];
+  
+      if (curFontSize){
+           $('.aumenta').css('font-size', curFontSize);
+
+      }
+      if (curFontSize1){
+           $('.table-sm').css('font-size', curFontSize1);
+      }
+
+      $(".increaseFont,.decreaseFont").click(function () {
+          var type = $(this).val();
+          curFontSize = $('.aumenta').css('font-size');
+          curFontSize1 = $('.table-sm').css('font-size');
+  
+          if (type == 'increase') {
+              $('.aumenta').css('font-size', parseInt(curFontSize) + 5 + "px");
+              $('.table-sm').css('font-size', parseInt(curFontSize1) + 5 + "px");
+ 
+          } else {
+              $('.aumenta').css('font-size', parseInt(curFontSize) - 5 + "px");
+              $('.table-sm').css('font-size', parseInt(curFontSize1) - 5 + "px");
+  
+          }
+          localStorage.setItem('FontSize', curFontSize);
+          localStorage.setItem('FontSize1', curFontSize1);
+      });      
+  });
+  </script>
